@@ -96,6 +96,8 @@ class LlamaProducer(ABCProducer):
         if self.options is None:
             raise ValueError("Options are not set")
 
+        print(self.prepared_files)
+
         llama_response = self.client.generate(
             system=self.prompt,
             prompt=json.dumps(self.prepared_files),
@@ -103,6 +105,8 @@ class LlamaProducer(ABCProducer):
             options=self.options,
             format="json"
         )["response"]
+
+        print(llama_response)
 
         try:
             llama_response_json = json.loads(llama_response)
