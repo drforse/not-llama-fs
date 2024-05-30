@@ -55,7 +55,7 @@ To install the project, follow these steps:
 
 To see the demo of the resulting file structure, run the command:
 
-For local llama3+llava  
+For local llama3+llava (requires their installation! check [prerequisites section](#prequisites) for more details)    
    ```bash
    python -m app demo "path/to/directory/with/files/to/organize" --producer llama 
    ```
