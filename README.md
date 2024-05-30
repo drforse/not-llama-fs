@@ -94,6 +94,9 @@ python -m app demo "path/to/directory/with/files/to/organize" --producer claude 
 - Better support for different models
 - Better support for different file types
 - Better documentation
+- Improved prompts
+- User-friendly interface (GUI)
+- Custom rules for organizing files
 
 ## Credits
 https://github.com/iyaja/llama-fs - for the idea, inspiration and making me angry (for nothing working!) enough to write this.
