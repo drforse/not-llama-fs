@@ -2,6 +2,8 @@
 
 NotLlamaFS is an AI self-organizing file manager. It automatically renames and organizes your files based on their contents and well-known conventions (e.g., time) using Chat AI. Currently the support is made for text files and image files (if used model supports it).
 
+It's made out of fun and in my opinion is useless.
+
 ## Inspiration
 
 I just wanted [llama_fs](https://github.com/iyaja/llama-fs) to actually work. So I rewrote it from scratch.
@@ -20,7 +22,7 @@ Before installing, ensure you have the following requirements:
 - Python 3.10 or higher  
 - pip (Python package installer)  
 
-If you want to use LlamaFS, you need to install [Ollama](https://ollama.com/) and pull the llama3 and llava models like that:  
+If you want to use NotLlamaFS with local llama models, you need to install [Ollama](https://ollama.com/) and pull the llama3 and llava models like that:  
 ```bash
 ollama pull llama3 
 ollama pull llava
@@ -85,7 +87,7 @@ python -m app demo "path/to/directory/with/files/to/organize" --producer claude 
 - NotLlamaFS doesn't try to say "its extremely fast because of using obvious cache for not reprocessing the same file" :D
 
 
-## What's next for LlamaFS
+## What's next for NotLlamaFS
 
 - Better configuration
 - Updating file structure in system
