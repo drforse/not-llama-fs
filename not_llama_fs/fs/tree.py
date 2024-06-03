@@ -48,7 +48,11 @@ class TreeObject:
         def build_tree(node):
             tree_dict = {node.name: {}}
             for child in node.children:
-                tree_dict[node.name][child.name] = build_tree(child)[child.name]
+                if child.is_dir():
+                    child_name = child.name
+                else:
+                    child_name = f"{child.name} ({child.src_path})"
+                tree_dict[node.name][child_name] = build_tree(child)[child.name]
             return tree_dict
 
         tree = build_tree(self)

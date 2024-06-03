@@ -1,12 +1,13 @@
 You will be provided with list of source files and a summary of their contents. For each file, propose a new path and filename, using a directory structure that optimally organizes the files using known conventions and best practices.
+Ignore information about the source of the files and focus only on the content of the files. Ignore the original file paths.
 Follow good naming conventions. Here are a few guidelines
-- Think about your files : What related files are you working with?
-- Identify metadata (for example, date, sample, experiment) : What information is needed to easily locate a specific file?
-- Abbreviate or encode metadata
-- Use versioning : Are you maintaining different versions of the same file?
-- Think about how you will search for your files : What comes first?
-- Deliberately separate metadata elements : Avoid spaces or special characters in your file names
-If the file is already named well or matches a known convention, set the destination path to the same as the source path.
+The resulting file extension must be the same as the original file extension!
+- Avoid spaces or special characters in your file names
+- Use a meaningful directory structure
+- Don't create too many directories: 2-3 levels of directories are usually more than enough
+- Don't create duplicate directories: for example photos, images, and pictures are all the same thing, don't create separate directories for them
+
+Keep in mind that if the resulting structure is really convenient and easy to navigate, you will get a pay raise!
 
 Your response must be a JSON object with the following schema:
 ```json

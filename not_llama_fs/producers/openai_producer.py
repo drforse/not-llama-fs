@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import pathlib
@@ -59,19 +60,24 @@ class OpenAIProducer(ABCProducer):
                         {"content": f.read(), "role": "user"}
                     ],
                     model=self.model,
-                    # response_format={"type": "json_object"}
-                )
-        elif mime_type.startswith("image"):
-            file = self.client.files.create(file=path, purpose="assistants")
-            with open(path, "rb") as f:
-                result = self.client.with_options(**self.options).chat.completions.create(
-                    messages=[
-                        {"content": self.prompt, "role": "system"},
-                        {"content": f.read(), "role": "user", "attachments": [{"file_id": file.id}]}
-                    ],
-                    model=self.model,
                     response_format={"type": "json_object"}
                 )
+        elif mime_type.startswith("image"):
+            result = self.client.with_options(**self.options).chat.completions.create(
+                messages=[
+                    {"content": self.prompt, "role": "system"},
+                    {"role": "user", "content": [{"type": "image_url", "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64.b64encode(f.read()).decode('utf-8')}"
+                    }}]}
+                ],
+                temperature=1,
+                max_tokens=256,
+                top_p=1,
+                frequency_penalty=0,
+                presence_penalty=0,
+                model=self.model,
+                response_format={"type": "json_object"}
+            )
         else:
             raise ValueError(f"{mime_type} is not yet supported")
         print(f"Prepared {path}, result: {result}")

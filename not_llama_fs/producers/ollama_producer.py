@@ -9,7 +9,7 @@ from .interface import ABCProducer
 from ..fs.tree import TreeObject
 
 
-class LlamaProducer(ABCProducer):
+class OllamaProducer(ABCProducer):
     def __init__(self, host: str = "localhost",):
         super().__init__()
         self.host = host
@@ -96,6 +96,7 @@ class LlamaProducer(ABCProducer):
         if self.options is None:
             raise ValueError("Options are not set")
 
+        print("Producing")
         print(self.prepared_files)
 
         llama_response = self.client.generate(
@@ -114,6 +115,13 @@ class LlamaProducer(ABCProducer):
             logging.error(f"Failed to decode JSON response: {e}")
             logging.error(f"Response: {llama_response}")
             raise e
+
+        for n, file in enumerate(llama_response_json["files"]):
+            src_path = pathlib.Path(file["src_path"])
+            dst_path = pathlib.Path(file["dst_path"])
+            if src_path.suffix != dst_path.suffix:
+                dst_path = dst_path.with_suffix(src_path.suffix)
+                llama_response_json["files"][n]["dst_path"] = dst_path.as_posix()
 
         return TreeObject.from_json(llama_response_json)
 

@@ -2,11 +2,19 @@ import pathlib
 
 from not_llama_fs.producers.claude_producer import ClaudeProducer
 from not_llama_fs.producers.groq_producer import GroqProducer
-from not_llama_fs.producers.llama_producer import LlamaProducer
+from not_llama_fs.producers.ollama_producer import OllamaProducer
 from not_llama_fs.producers.openai_producer import OpenAIProducer
 
+IMAGE_SUPPORT_PRODUCERS = ["ollama", "claude"]
 
-def demo(path: pathlib.Path, producer_name: str = "llama", apikey: str = None):
+
+def demo(
+        path: pathlib.Path,
+        producer_name: str = "ollama",
+        text_model: str = "llama3",
+        image_model: str = "llava",
+        apikey: str = None
+):
     if not path.exists():
         raise ValueError(f"Path {path} does not exist")
 
@@ -19,34 +27,29 @@ def demo(path: pathlib.Path, producer_name: str = "llama", apikey: str = None):
     print(f"Using producer {producer_name}")
     options = {}
     produce_options = {}
-    if producer_name == "llama":
-        producer = LlamaProducer(host="localhost")
-        model = "llama3"
-        options = {"num_tokens": 128}
-        produce_options = {"num_tokens": -1}
+    if producer_name == "ollama":
+        producer = OllamaProducer(host="localhost")
+        options = {"num_predict": 128}
+        produce_options = {"num_predict": -1}
     elif producer_name == "groq":
         producer = GroqProducer(api_key=apikey)
-        model = "llama3-70b-8192"
     elif producer_name == "openai":
         producer = OpenAIProducer(api_key=apikey)
-        model = "gpt-3.5-turbo-1106"
     elif producer_name == "claude":
         producer = ClaudeProducer(apikey=apikey)
-        model = "claude-3-haiku-20240307"
         options = {"max_tokens": 128}
         produce_options = {"max_tokens": 4096}
     else:
         raise ValueError(f"Unknown producer {producer_name}")
 
     producer.load_directory(path)
-    if producer_name == "llama":
-        producer.setup(prompt, model="llava", options=options)
+
+    if producer_name in IMAGE_SUPPORT_PRODUCERS:
+        producer.setup(prompt, model=image_model, options=options)
         producer.prepare_files("image")
-    elif producer_name == "claude":
-        producer.setup(prompt, model=model, options=options)
-        producer.prepare_files()
-    producer.setup(prompt, model=model, options=options)
-    producer.prepare_files("text")
-    producer.setup(final_prompt, model=model, options=produce_options)
+
+    producer.setup(prompt, model=text_model, options=options)
+    producer.prepare_files()
+    producer.setup(final_prompt, model=text_model, options=produce_options)
     tree = producer.produce()
     print(tree)

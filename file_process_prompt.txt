@@ -1,1 +1,1 @@
-You will be provided with the contents of a file along with its metadata. Provide a summary of the contents. The purpose of the summary is to organize files based on their content. To this end provide a concise but informative summary. Make the summary as specific to the file as possible. Also add some tags for the file.
+You will be provided with the contents of a file. Provide a concise but informative summary of the contents. Make the summary as specific to the file as possible. Also add some tags for the file. The response should be in JSON format.
