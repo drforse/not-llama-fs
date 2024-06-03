@@ -57,7 +57,7 @@ To see the demo of the resulting file structure, run the command:
 
 For local llama3+llava (requires their installation! check [prerequisites section](#prerequisites) for more details)    
    ```bash
-   python -m app demo "path/to/directory/with/files/to/organize" --producer llama 
+   python -m app demo "path/to/directory/with/files/to/organize" --producer ollama 
    ```
 
 For groq  
@@ -74,6 +74,21 @@ For Claude
 ```bash
 python -m app demo "path/to/directory/with/files/to/organize" --producer claude --apikey "your-claude-api-key" 
 ```  
+
+More settings for your run:  
+`--text-model`: model for text files    
+Defaults are:  
+- llama3 for local ollama models  
+- llama3-70b-8192 for groq  
+- gpt-4o for openai  
+- claude-3-haiku-20240307 for claude  
+
+`--image-model`: model for image files  
+Defaults are:  
+- llava for local ollama models  
+- claude-3-haiku-20240307 for claude  
+- text model is used for groq (setting ignored, code here is not completely alright)  
+- text model is used for openai (setting ignored, code here is not completely alright)  
 
 
 ## Differences from LlamaFS
