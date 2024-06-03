@@ -9,12 +9,12 @@ packages = [{include = "not_llama_fs"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 ollama = "^0.2.0"
-python-magic = "^0.4.27"
-python-magic-bin = "^0.4.14"
 asciitree = "^0.3.3"
 groq = "^0.8.0"
 openai = "^1.30.5"
 anthropic = "^0.27.0"
+python-magic-bin = { version = "^0.4.14", markers = "sys_platform != 'linux'" }
+python-magic = { version = "^0.4.27", markers = "sys_platform == 'linux'" }
 
 [build-system]
 requires = ["poetry-core"]
