@@ -37,7 +37,7 @@ def main():
             args.image_model = "claude-3-haiku-20240307"
 
     if args.command == "demo":
-        demo(args.path, args.producer, args.text_model, args.image_model, args.apikey)
+        treedict = demo(args.path, args.producer, args.text_model, args.image_model, args.apikey)
     else:
         print("Unknown command")
 

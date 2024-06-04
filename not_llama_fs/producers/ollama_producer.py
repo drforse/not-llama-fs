@@ -1,9 +1,11 @@
+import os
 import json
 import logging
 import pathlib
 
 import magic
 import ollama
+from llama_index.core import SimpleDirectoryReader
 
 from .interface import ABCProducer
 from ..fs.tree import TreeObject
@@ -38,8 +40,14 @@ class OllamaProducer(ABCProducer):
                 host=self.host
             )
         return self._client
+    
+    def prepare_file(self):
+        pass
+    
+    def prepare_files(self):
+        pass
 
-    def prepare_file(self, path: pathlib.Path):
+    def prepare_files_llamaindex(self, path):
         if self.model is None:
             raise ValueError("Model is not set")
         if self.prompt is None:
@@ -47,46 +55,19 @@ class OllamaProducer(ABCProducer):
         if self.options is None:
             raise ValueError("Options are not set")
 
-        print(f"Preparing {path}")
-        mime = magic.Magic(mime=True)
-        mime_type = mime.from_file(path.as_posix())
-        print(f"Detected mime type: {mime_type}")
-        if mime_type.startswith("text"):
-            with open(path, "r", encoding="utf-8") as f:
-                result = self.client.generate(
-                    model=self.model,
-                    system=self.prompt,
-                    prompt=f.read(),
-                    options=self.options,
-                    format="json"
-                )
-        elif mime_type.startswith("image"):
-            with open(path, "rb") as f:
-                result = self.client.generate(
-                    model=self.model,
-                    prompt=self.prompt,
-                    images=[f.read()],
-                    options=self.options,
-                    format="json"
-                )
-        else:
-            raise ValueError(f"{mime_type} is not yet supported")
-        print(f"Prepared {path}, result: {result}")
-        self.prepared_files.append((path.as_posix(), result["response"]))
-
-    def prepare_files(self, files_type: str | None = None):
-        for file in self.files:
-            if files_type is not None:
-                mime = magic.Magic(mime=True)
-                mime_type = mime.from_file(file.as_posix())
-                if not mime_type.startswith(files_type):
-                    continue
-            if file.as_posix() in [f[0] for f in self.prepared_files]:
-                continue
-            try:
-                self.prepare_file(file)
-            except ValueError as e:
-                logging.info(e)
+        reader = SimpleDirectoryReader(path, recursive=True) # recursively loads all the files in the directory of the accepted data types (see the website for available types)
+            
+        for file in reader.iter_data():
+            result = self.client.generate(
+                    model = self.model,
+                    system = self.prompt,
+                    prompt = str(file),
+                    options = self.options,
+                    format = "json"
+            )
+            print(f"Prepared {path}, result: {result}")
+            self.prepared_files.append((os.path.join(path.as_posix(), file[0].metadata['file_name']), result["response"]))
+        
 
     def produce(self) -> TreeObject:
         if self.model is None:
@@ -97,7 +78,7 @@ class OllamaProducer(ABCProducer):
             raise ValueError("Options are not set")
 
         print("Producing")
-        print(self.prepared_files)
+        print(f'Prepared files {self.prepared_files}')
 
         llama_response = self.client.generate(
             system=self.prompt,
@@ -106,8 +87,6 @@ class OllamaProducer(ABCProducer):
             options=self.options,
             format="json"
         )["response"]
-
-        print(llama_response)
 
         try:
             llama_response_json = json.loads(llama_response)
@@ -123,6 +102,4 @@ class OllamaProducer(ABCProducer):
                 dst_path = dst_path.with_suffix(src_path.suffix)
                 llama_response_json["files"][n]["dst_path"] = dst_path.as_posix()
 
-        return TreeObject.from_json(llama_response_json)
-
-
+        return llama_response, TreeObject.from_json(llama_response_json)

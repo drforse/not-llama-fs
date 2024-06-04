@@ -28,6 +28,7 @@ def demo(
     options = {}
     produce_options = {}
     if producer_name == "ollama":
+        model = 'llama3'
         producer = OllamaProducer(host="localhost")
         options = {"num_predict": 128}
         produce_options = {"num_predict": -1}
@@ -44,12 +45,10 @@ def demo(
 
     producer.load_directory(path)
 
-    if producer_name in IMAGE_SUPPORT_PRODUCERS:
-        producer.setup(prompt, model=image_model, options=options)
-        producer.prepare_files("image")
-
     producer.setup(prompt, model=text_model, options=options)
-    producer.prepare_files()
-    producer.setup(final_prompt, model=text_model, options=produce_options)
-    tree = producer.produce()
+    producer.prepare_files_llamaindex(path)
+    producer.setup(final_prompt, model=model, options=produce_options)
+    treedict, tree = producer.produce() # issue here with how the model is producing , dictionaries for metadata is not consistent at all
     print(tree)
+
+    return treedict
