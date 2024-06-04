@@ -1,4 +1,6 @@
 import pathlib
+import shutil
+import os
 
 from not_llama_fs.producers.claude_producer import ClaudeProducer
 from not_llama_fs.producers.groq_producer import GroqProducer
@@ -49,6 +51,21 @@ def demo(
     producer.prepare_files_llamaindex(path)
     producer.setup(final_prompt, model=model, options=produce_options)
     treedict, tree = producer.produce() # issue here with how the model is producing , dictionaries for metadata is not consistent at all
-    print(tree)
-
+    
+    print(tree) # Show the ascii art for the new directory
+    print(treedict)
     return treedict
+
+def move_file(src, file):
+    dst_path = os.path.dirname(file['dst_path'])
+    dst_path = os.path.join(src, dst_path) # absolute path so the subdirectory gets created in the right directory 
+    os.makedirs(dst_path, exist_ok=True) # makes the directories if the directories didn't exist previously
+
+    # Move the file from the original directory to the new directory
+    try:
+        dst_path = os.path.join(dst_path, os.path.basename(file['dst_path']))
+        shutil.move(file['src_path'], dst_path)
+        print(f'Moved {file["src_path"]} to {dst_path}')
+
+    except Exception as e:
+        raise e

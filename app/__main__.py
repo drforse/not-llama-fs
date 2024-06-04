@@ -3,7 +3,7 @@ import logging
 import pathlib
 import sys
 
-from app import demo, IMAGE_SUPPORT_PRODUCERS
+from app import demo, IMAGE_SUPPORT_PRODUCERS, move_file
 
 
 def main():
@@ -41,6 +41,8 @@ def main():
     else:
         print("Unknown command")
 
-
+    for file in treedict['files']:
+        move_file(args.path, file)
+    
 if __name__ == "__main__":
     main()

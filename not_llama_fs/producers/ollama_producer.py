@@ -65,7 +65,7 @@ class OllamaProducer(ABCProducer):
                     options = self.options,
                     format = "json"
             )
-            print(f"Prepared {path}, result: {result}")
+            print(f"Prepared {path}, result: {file[0].metadata['file_name']}")
             self.prepared_files.append((os.path.join(path.as_posix(), file[0].metadata['file_name']), result["response"]))
         
 
@@ -76,9 +76,6 @@ class OllamaProducer(ABCProducer):
             raise ValueError("Prompt is not set")
         if self.options is None:
             raise ValueError("Options are not set")
-
-        print("Producing")
-        print(f'Prepared files {self.prepared_files}')
 
         llama_response = self.client.generate(
             system=self.prompt,
@@ -102,4 +99,4 @@ class OllamaProducer(ABCProducer):
                 dst_path = dst_path.with_suffix(src_path.suffix)
                 llama_response_json["files"][n]["dst_path"] = dst_path.as_posix()
 
-        return llama_response, TreeObject.from_json(llama_response_json)
+        return json.loads(llama_response), TreeObject.from_json(llama_response_json)
