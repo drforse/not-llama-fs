@@ -116,7 +116,7 @@ class OllamaProducer(ABCProducer):
             logging.error(f"Response: {llama_response}")
             raise e
 
-        for n, file in enumerate(llama_response_json["files"]):
+        for n, file in enumerate(llama_response_json.get("files", [])):
             src_path = pathlib.Path(file["src_path"])
             dst_path = pathlib.Path(file["dst_path"])
             if src_path.suffix != dst_path.suffix:

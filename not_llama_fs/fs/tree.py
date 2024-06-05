@@ -26,8 +26,8 @@ class TreeObject:
 
     @classmethod
     def from_json(cls, data: dict):
-        tree = None
-        for file in data["files"]:
+        tree = TreeObject("Tre tree is empty!", [])
+        for file in data.get("files", []):
             parts = pathlib.Path(file["dst_path"]).parts
             if tree is None:
                 tree = TreeObject(parts[0], [])
