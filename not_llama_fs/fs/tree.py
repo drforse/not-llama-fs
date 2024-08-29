@@ -1,4 +1,5 @@
 import pathlib
+import re
 from typing import Any
 
 from asciitree import LeftAligned, BoxStyle
@@ -26,8 +27,15 @@ class TreeObject:
 
     @classmethod
     def from_json(cls, data: dict):
-        tree = TreeObject("Tre tree is empty!", [])
+        tree = TreeObject("root", [])
         for file in data.get("files", []):
+            if file["dst_path"].startswith("/"):
+                file["dst_path"] = file["dst_path"][1:]
+            if re.match(r"^[a-zA-Z]:\\", file["dst_path"]):
+                file["dst_path"] = file["dst_path"][4:]
+            if re.match(r"^[a-zA-Z]:/", file["dst_path"]):
+                file["dst_path"] = file["dst_path"][3:]
+
             parts = pathlib.Path(file["dst_path"]).parts
             if tree is None:
                 tree = TreeObject(parts[0], [])

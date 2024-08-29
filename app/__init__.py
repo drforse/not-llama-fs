@@ -1,5 +1,6 @@
 import pathlib
 
+from not_llama_fs.fs.fs_writer import FsWriter, LocalDiskFsWriter
 from not_llama_fs.producers.claude_producer import ClaudeProducer
 from not_llama_fs.producers.groq_producer import GroqProducer
 from not_llama_fs.producers.ollama_producer import OllamaProducer
@@ -9,6 +10,33 @@ IMAGE_SUPPORT_PRODUCERS = ["ollama", "claude"]
 
 
 def demo(
+        path: pathlib.Path,
+        producer_name: str = "ollama",
+        text_model: str = "llama3",
+        image_model: str = "llava",
+        apikey: str = None
+):
+    tree = _get_tree(path, producer_name, text_model, image_model, apikey)
+    print(tree)
+
+
+def create_local_disk_fs(
+        path: pathlib.Path,
+        dest_path: pathlib.Path,
+        producer_name: str = "ollama",
+        text_model: str = "llama3",
+        image_model: str = "llava",
+        apikey: str = None,
+        move: bool = False
+):
+    tree = _get_tree(path, producer_name, text_model, image_model, apikey)
+    print(tree)
+    print(f"Writing tree to {dest_path}")
+    dest_path.mkdir(exist_ok=True, parents=True)
+    LocalDiskFsWriter(dest_path, move).write_tree(tree)
+
+
+def _get_tree(
         path: pathlib.Path,
         producer_name: str = "ollama",
         text_model: str = "llama3",
@@ -51,5 +79,4 @@ def demo(
     producer.setup(prompt, model=text_model, options=options)
     producer.prepare_files()
     producer.setup(final_prompt, model=text_model, options=produce_options)
-    tree = producer.produce()
-    print(tree)
+    return producer.produce()

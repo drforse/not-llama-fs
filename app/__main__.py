@@ -3,17 +3,19 @@ import logging
 import pathlib
 import sys
 
-from app import demo, IMAGE_SUPPORT_PRODUCERS
+from app import demo, IMAGE_SUPPORT_PRODUCERS, create_local_disk_fs
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", type=str, help="Command to execute")
     parser.add_argument("path", type=pathlib.Path, help="Path to directory")
+    parser.add_argument("--dest-path", type=pathlib.Path, help="Path to destination directory", default=None)
     parser.add_argument("--producer", type=str, help="Producer to use: ollama/groq/claude/openai", default="ollama")
     parser.add_argument("--apikey", type=str, help="API key for Groq/Claude/OpenAI", default=None)
     parser.add_argument("--text-model", type=str, help="Text model to use", default=None)
     parser.add_argument("--image-model", type=str, help="Image model to use", default=None)
+    parser.add_argument("--move", action="store_true", help="Move files instead of copying, only for create_fs command")
     args = parser.parse_args()
     print(args.command, args.path)
 
@@ -38,6 +40,11 @@ def main():
 
     if args.command == "demo":
         demo(args.path, args.producer, args.text_model, args.image_model, args.apikey)
+    elif args.command == "create_fs":
+        if not args.dest_path:
+            raise ValueError("Destination path is required")
+        create_local_disk_fs(args.path, args.dest_path, args.producer, args.text_model,
+                             args.image_model, args.apikey, args.move)
     else:
         print("Unknown command")
 
