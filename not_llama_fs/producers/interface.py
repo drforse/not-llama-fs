@@ -24,7 +24,7 @@ class ABCProducer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def setup(self, prompt: str, model: str, options: dict | None = None):
+    def setup(self, prompt: str, model: str, options: dict | None = None, treat_pdf_as_images: bool = False):
         pass
 
     def load_file(self, path: pathlib.Path):

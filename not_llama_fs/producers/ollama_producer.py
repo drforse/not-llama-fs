@@ -4,6 +4,7 @@ import pathlib
 
 import magic
 import ollama
+import pymupdf
 
 from .interface import ABCProducer
 from ..fs.tree import TreeObject
@@ -16,6 +17,7 @@ class OllamaProducer(ABCProducer):
         self.prompt = None
         self.model = None
         self.options = {}
+        self.treat_pdf_as_images = False
         self._client = None
 
     def setup(
@@ -23,6 +25,7 @@ class OllamaProducer(ABCProducer):
             prompt: str,
             model: str = "llama3",
             options: dict | None = None,
+            treat_pdf_as_images: bool = False
     ):
         self.prompt = prompt
         self.model = model
@@ -30,6 +33,7 @@ class OllamaProducer(ABCProducer):
             self.options = options
         if self.options is None:
             self.options = {}
+        self.treat_pdf_as_images = treat_pdf_as_images
 
     @property
     def client(self) -> ollama.Client:
@@ -66,6 +70,38 @@ class OllamaProducer(ABCProducer):
                     model=self.model,
                     prompt=self.prompt,
                     images=[f.read()],
+                    options=self.options,
+                    format="json"
+                )
+        elif mime_type == "application/pdf" and self.treat_pdf_as_images:
+            pdf_file = pymupdf.open(path.as_posix())
+            if not pdf_file.is_pdf:
+                logging.error(f"{path} is recognized as PDF but cannot be opened as such")
+                return
+            pdf_images = []
+            for page in pdf_file:
+                pdf_images.append(page.get_pixmap().tobytes())
+            with open(path, "rb") as f:
+                result = self.client.generate(
+                    model=self.model,
+                    prompt=self.prompt,
+                    images=pdf_images,
+                    options=self.options,
+                    format="json"
+                )
+        elif mime_type == "application/pdf":
+            pdf_file = pymupdf.open(path.as_posix())
+            if not pdf_file.is_pdf:
+                logging.error(f"{path} is recognized as PDF but cannot be opened as such")
+                return
+            pdf_text = ""
+            for page in pdf_file:
+                pdf_text += page.get_text() + "\nPAGE_BREAK\n"
+            with open(path, "rb") as f:
+                result = self.client.generate(
+                    model=self.model,
+                    system=self.prompt,
+                    prompt=pdf_text,
                     options=self.options,
                     format="json"
                 )

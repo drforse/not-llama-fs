@@ -15,6 +15,7 @@ openai = "^1.30.5"
 anthropic = "^0.27.0"
 python-magic-bin = { version = "^0.4.14", markers = "sys_platform != 'linux' and sys_platform != 'darwin'" }
 python-magic = { version = "^0.4.27", markers = "sys_platform == 'linux' or sys_platform == 'darwin'" }
+pymupdf = "^1.24.9"
 
 [build-system]
 requires = ["poetry-core"]

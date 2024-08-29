@@ -14,9 +14,10 @@ def demo(
         producer_name: str = "ollama",
         text_model: str = "llama3",
         image_model: str = "llava",
-        apikey: str = None
+        apikey: str = None,
+        treat_pdf_as_images: bool = False
 ):
-    tree = _get_tree(path, producer_name, text_model, image_model, apikey)
+    tree = _get_tree(path, producer_name, text_model, image_model, apikey, treat_pdf_as_images)
     print(tree)
 
 
@@ -27,9 +28,10 @@ def create_local_disk_fs(
         text_model: str = "llama3",
         image_model: str = "llava",
         apikey: str = None,
+        treat_pdf_as_images: bool = False,
         move: bool = False
 ):
-    tree = _get_tree(path, producer_name, text_model, image_model, apikey)
+    tree = _get_tree(path, producer_name, text_model, image_model, apikey, treat_pdf_as_images)
     print(tree)
     print(f"Writing tree to {dest_path}")
     dest_path.mkdir(exist_ok=True, parents=True)
@@ -41,7 +43,8 @@ def _get_tree(
         producer_name: str = "ollama",
         text_model: str = "llama3",
         image_model: str = "llava",
-        apikey: str = None
+        apikey: str = None,
+        treat_pdf_as_images: bool = False
 ):
     if not path.exists():
         raise ValueError(f"Path {path} does not exist")
@@ -76,7 +79,7 @@ def _get_tree(
         producer.setup(prompt, model=image_model, options=options)
         producer.prepare_files("image")
 
-    producer.setup(prompt, model=text_model, options=options)
+    producer.setup(prompt, model=text_model, options=options, treat_pdf_as_images=treat_pdf_as_images)
     producer.prepare_files()
     producer.setup(final_prompt, model=text_model, options=produce_options)
     return producer.produce()

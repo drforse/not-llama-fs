@@ -20,12 +20,14 @@ class OpenAIProducer(ABCProducer):
         self.options = {}
         self._client = None
         self.api_key = api_key
+        self.treat_pdf_as_images = False
 
     def setup(
             self,
             prompt: str,
             model: str = "gpt-3.5-turbo",
             options: dict | None = None,
+            treat_pdf_as_images: bool = False
     ):
         self.prompt = prompt
         self.model = model
@@ -33,6 +35,7 @@ class OpenAIProducer(ABCProducer):
             self.options = options
         if self.options is None:
             self.options = {}
+        self.treat_pdf_as_images = treat_pdf_as_images
 
     @property
     def client(self) -> openai.OpenAI:

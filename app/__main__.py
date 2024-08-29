@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--text-model", type=str, help="Text model to use", default=None)
     parser.add_argument("--image-model", type=str, help="Image model to use", default=None)
     parser.add_argument("--move", action="store_true", help="Move files instead of copying, only for create_fs command")
+    parser.add_argument("--pdf-as-images", action="store_true", help="Treat PDFs as images")
     args = parser.parse_args()
     print(args.command, args.path)
 
@@ -39,12 +40,12 @@ def main():
             args.image_model = "claude-3-haiku-20240307"
 
     if args.command == "demo":
-        demo(args.path, args.producer, args.text_model, args.image_model, args.apikey)
+        demo(args.path, args.producer, args.text_model, args.image_model, args.apikey, args.pdf_as_images)
     elif args.command == "create_fs":
         if not args.dest_path:
             raise ValueError("Destination path is required")
         create_local_disk_fs(args.path, args.dest_path, args.producer, args.text_model,
-                             args.image_model, args.apikey, args.move)
+                             args.image_model, args.apikey, args.pdf_as_images, args.move)
     else:
         print("Unknown command")
 

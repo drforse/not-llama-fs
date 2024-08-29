@@ -19,12 +19,14 @@ class ClaudeProducer(ABCProducer):
         self.options = {}
         self._client = None
         self.apikey = apikey
+        self.treat_pdf_as_images = False
 
     def setup(
             self,
             prompt: str,
             model: str = "claude-3-opus-20240229",
             options: dict | None = None,
+            treat_pdf_as_images: bool = False
     ):
         self.prompt = prompt
         self.model = model
@@ -32,6 +34,7 @@ class ClaudeProducer(ABCProducer):
             self.options = options
         if self.options is None:
             self.options = {}
+        self.treat_pdf_as_images = treat_pdf_as_images
 
     @property
     def client(self) -> anthropic.Client:

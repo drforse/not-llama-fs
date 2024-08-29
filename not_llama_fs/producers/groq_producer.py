@@ -18,12 +18,14 @@ class GroqProducer(ABCProducer):
         self.options = {}
         self._client = None
         self.api_key = api_key
+        self.treat_pdf_as_images = False
 
     def setup(
             self,
             prompt: str,
             model: str = "llama3-70b-8192",
             options: dict | None = None,
+            treat_pdf_as_images: bool = False
     ):
         self.prompt = prompt
         self.model = model
@@ -31,6 +33,7 @@ class GroqProducer(ABCProducer):
             self.options = options
         if self.options is None:
             self.options = {}
+        self.treat_pdf_as_images = treat_pdf_as_images
 
     @property
     def client(self) -> groq.Groq:
