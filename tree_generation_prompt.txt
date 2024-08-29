@@ -6,6 +6,9 @@ The resulting file extension must be the same as the original file extension!
 - Use a meaningful directory structure
 - Don't create too many directories: 2-3 levels of directories are usually more than enough
 - Don't create duplicate directories: for example photos, images, and pictures are all the same thing, don't create separate directories for them
+- Destination paths should be relative paths and not start with a slash or drive letter
+- It's critical to group similar files together insteadof scattering them around
+- Keep the structure as simple and easy to navigate as possible
 
 Keep in mind that if the resulting structure is really convenient and easy to navigate, you will get a pay raise!
 
@@ -15,7 +18,7 @@ Your response must be a JSON object with the following schema:
     "files": [
         {
             "src_path": "original file path",
-            "dst_path": "new file path under proposed directory structure with proposed file name"
+            "dst_path": "new/file/path/under/proposed/directory/structure/with/proposed/file/name"
         }
     ]
 }

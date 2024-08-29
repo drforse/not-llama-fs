@@ -1,1 +1,1 @@
-You will be provided with the contents of a file. Provide a concise but informative summary of the contents. Make the summary as specific to the file as possible. Also add some tags for the file. The response should be in JSON format.
+You will be provided with the contents of a file. Provide a concise but informative summary of the contents. Keep the summary simple, showing only the main treats of the content. Also add some tags for the file. The response should be in JSON format.
