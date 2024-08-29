@@ -53,6 +53,7 @@ To install the project, follow these steps:
     ```
 ## Usage
 
+### Demo command
 To see the demo of the resulting file structure, run the command:
 
 For local llama3+llava (requires their installation! check [prerequisites section](#prerequisites) for more details)    
@@ -75,7 +76,18 @@ For Claude
 python -m app demo "path/to/directory/with/files/to/organize" --producer claude --apikey "your-claude-api-key" 
 ```  
 
-More settings for your run:  
+### Real run command
+To actually copy/move and organize files, run the command:
+
+For local llama3+llava (requires their installation! check [prerequisites section](#prerequisites) for more details)    
+   ```bash
+   python -m app create_fs "path/to/directory/with/files/to/organize" --dest-path "destination/path" --producer ollama 
+   ```
+
+And for other producers similarly, the same as in the demo command, but with `create_fs` instead of `demo` and with the destination path.
+
+
+### More settings for your run:  
 `--text-model`: model for text files    
 Defaults are:  
 - llama3 for local ollama models  
@@ -88,7 +100,11 @@ Defaults are:
 - llava for local ollama models  
 - claude-3-haiku-20240307 for claude  
 - text model is used for groq (setting ignored, code here is not completely alright)  
-- text model is used for openai (setting ignored, code here is not completely alright)  
+- text model is used for openai (setting ignored, code here is not completely alright)
+
+`--move`: by default create_fs copies files to new locations, but it can be changed with move flag, which makes it move the files insteadof copying  
+
+`--pdf-as-images`: by default producers translate pdf to text and analyze text unless there is no text found, but if pdf-as-images is specified than it analyzes it as images
 
 
 ## Differences from LlamaFS
