@@ -73,31 +73,39 @@ class OllamaProducer(ABCProducer):
                     options=self.options,
                     format="json"
                 )
-        elif mime_type == "application/pdf" and self.treat_pdf_as_images:
-            pdf_file = pymupdf.open(path.as_posix())
-            if not pdf_file.is_pdf:
-                logging.error(f"{path} is recognized as PDF but cannot be opened as such")
-                return
-            pdf_images = []
-            for page in pdf_file:
-                pdf_images.append(page.get_pixmap().tobytes())
-            with open(path, "rb") as f:
-                result = self.client.generate(
-                    model=self.model,
-                    prompt=self.prompt,
-                    images=pdf_images,
-                    options=self.options,
-                    format="json"
-                )
         elif mime_type == "application/pdf":
             pdf_file = pymupdf.open(path.as_posix())
             if not pdf_file.is_pdf:
                 logging.error(f"{path} is recognized as PDF but cannot be opened as such")
                 return
-            pdf_text = ""
-            for page in pdf_file:
-                pdf_text += page.get_text() + "\nPAGE_BREAK\n"
-            with open(path, "rb") as f:
+            treat_as_image = self.treat_pdf_as_images
+            pdf_text, pdf_images = "", []
+            if not treat_as_image:
+                for page in pdf_file:
+                    # print(f"{page=}")
+                    page_text = page.get_text()
+                    # print(f"{page_text=}")
+                    if page_text != "":
+                        pdf_text += page.get_text() + "\nPAGE_BREAK\n"
+                # print(f"{pdf_text=}")
+                if pdf_text == "":
+                    treat_as_image = True
+            # print(f"{treat_as_image=}")
+            if treat_as_image:
+                for page in pdf_file:
+                    pix = page.get_pixmap()
+                    pdf_images.append(pix.samples)
+                    pix.save(f"test.png")
+                # print(f"{len(pdf_images)=}")
+                with open("test.png", "rb") as f:
+                    result = self.client.generate(
+                        model=self.model,
+                        prompt=self.prompt,
+                        images=[f.read()],
+                        options=self.options,
+                        format="json"
+                    )
+            else:
                 result = self.client.generate(
                     model=self.model,
                     system=self.prompt,
